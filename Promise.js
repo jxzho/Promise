@@ -42,6 +42,7 @@ Promise.prototype.then = function(onfulfill, onreject) {
     });
   }
   if (self.state === "rejected") {
+    // 待写
   }
   if (self.state === "pending") {
     return new Promise((resolve, reject) => {
@@ -54,7 +55,9 @@ Promise.prototype.then = function(onfulfill, onreject) {
         }
       });
 
-      self.onRejectedQue.push(function() {});
+      self.onRejectedQue.push(function() {
+        // 待写
+      });
     });
   }
 };
