@@ -1,16 +1,54 @@
-let Promise = require("./Promise");
+let PromiseX = require("./PromiseX");
 
-let p = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve("i am data");
-  }, 0);
-});
+setTimeout(() => {
+  console.log("setTimeout");
+}, 0);
 
-p.then(data => {
-  console.log(data);
-  return new Promise((resolve, reject) => {
-    resolve('i am super data');
+new PromiseX(resolve => {
+  console.log(1);
+  resolve();
+})
+  .then(() => {
+    console.log(2);
+  })
+  .then(() => {
+    console.log(3);
   });
-}).then(data => {
-  console.log(data);
-});
+
+new PromiseX(resolve => {
+  console.log(4);
+  resolve();
+})
+  .then(() => {
+    console.log(5);
+  })
+  .then(() => {
+    console.log(6);
+  });
+
+/* new Promise1(resolve => {
+  console.log("promise 1");
+  resolve();
+})
+  .then(() => {
+    return console.log("A1");
+  })
+  .then(() => {
+    return console.log("A2");
+  });
+
+new Promise1(resolve => {
+  console.log("promise 2");
+  resolve();
+})
+  .then(() => {
+    return console.log("B1");
+  })
+  .then(() => {
+    return console.log("B2");
+  })
+  .then(() => {
+    return console.log("B3");
+  }); */
+
+console.log("end");
