@@ -1,3 +1,13 @@
+const isPromise = (value) => {
+  if (value !== null && typeof value === 'object' || typeof value === 'function') {
+    if (typeof value.then === 'function') {
+      return true
+    } else {
+      return false
+    }
+  }
+}
+
 function PromiseX(fn) {
   let self = this;
   self.state = "pending";
@@ -145,6 +155,36 @@ PromiseX.reject = function(reason) {
     reject(reason);
   });
 };
+
+PromiseX.all = function () {
+  const ary = []
+  let count = 0
+  
+  return new Promise((resolve, reject) => {
+    function processData (key, value) {
+      count++
+      ary[key] = value
+      // => 如果promise中是异步resolve的话，使用promises.length === ary.length判断会有问题
+      if (count === promises.length) {
+        resolve(ary)
+      }
+    }
+
+    promises.forEach((item, index) => {
+      if (isPromise(item)) {
+        item
+          .then(res => {
+            processData(index, res)
+          })
+          .catch(err => {
+            reject('reject promise' + index + err)
+          })
+      } else {
+        processData(index, item)
+      }
+    })
+  })
+}
 
 PromiseX.race = function(promises) {
   let execute = [];
