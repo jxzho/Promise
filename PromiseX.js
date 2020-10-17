@@ -5,6 +5,8 @@ const isPromise = (value) => {
     } else {
       return false
     }
+  } else {
+    return false
   }
 }
 
