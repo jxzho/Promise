@@ -17,7 +17,7 @@ function PromiseX(fn) {
   self.onRejectedQue = [];
 
   function resolve(data) {
-    if (data instanceof PromiseX) {
+    if (isPromise(data)) { // data instanceof PromiseX
       data.then(resolve, reject);
     } else {
       setTimeout(() => {
