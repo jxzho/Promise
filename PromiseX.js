@@ -1,29 +1,33 @@
 const isPromise = (value) => {
-  if (value !== null && typeof value === 'object' || typeof value === 'function') {
+  if (
+    (value !== null && typeof value === 'object') ||
+    typeof value === 'function'
+  ) {
     if (typeof value.then === 'function') {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
   } else {
-    return false
+    return false;
   }
-}
+};
 
 function PromiseX(fn) {
   let self = this;
-  self.state = "pending";
+  self.state = 'pending';
   self.data = undefined;
   self.reason = undefined;
   self.onFulfilledQue = [];
   self.onRejectedQue = [];
 
   function resolve(data) {
-    if (isPromise(data)) { // data instanceof PromiseX
+    if (isPromise(data)) {
+      // data instanceof PromiseX
       data.then(resolve, reject);
     } else {
       setTimeout(() => {
-        self.state = "resolved";
+        self.state = 'resolved';
         self.data = data;
         self.onFulfilledQue.forEach((v, i) => {
           v(self.data);
@@ -34,7 +38,7 @@ function PromiseX(fn) {
 
   function reject(reason) {
     setTimeout(() => {
-      self.state = "rejected";
+      self.state = 'rejected';
       self.reason = reason;
       self.onRejectedQue.forEach((v, i) => {
         v(self.reason);
@@ -51,7 +55,9 @@ function PromiseX(fn) {
 
 function resolvePromise(promise, x, resolve, reject) {
   if (promise === x) {
-    return reject(new TypeError("return value of onfulfill cannot equal to thenable"));
+    return reject(
+      new TypeError('return value of onfulfill cannot equal to thenable')
+    );
   }
   if (x instanceof PromiseX) {
     return x.then(resolve, reject);
@@ -60,13 +66,14 @@ function resolvePromise(promise, x, resolve, reject) {
     try {
       const then = x.then;
       if (then instanceof Function) {
-        then.call(x, 
+        then.call(
+          x,
           function (value) {
             resolvePromise(promise, value, resolve, reject);
           },
           function (reason) {
             reject(reason);
-          } 
+          }
         );
       } else {
         resolve(x);
@@ -79,15 +86,15 @@ function resolvePromise(promise, x, resolve, reject) {
   }
 }
 
-PromiseX.prototype.then = function(onfulfill, onreject) {
+PromiseX.prototype.then = function (onfulfill, onreject) {
   let self = this,
-      promise2 = undefined;
+    promise2 = undefined;
 
   // 对onfulfill和onreject进行处理
-  onfulfill = onfulfill instanceof Function ? onfulfill : value => value;
-  onreject = onreject instanceof Function ? onreject : reason => reason;
-  
-  if (self.state === "resolved") {
+  onfulfill = onfulfill instanceof Function ? onfulfill : (value) => value;
+  onreject = onreject instanceof Function ? onreject : (reason) => reason;
+
+  if (self.state === 'resolved') {
     promise2 = new PromiseX((resolve, reject) => {
       setTimeout(() => {
         try {
@@ -100,7 +107,7 @@ PromiseX.prototype.then = function(onfulfill, onreject) {
     });
     return promise2;
   }
-  if (self.state === "rejected") {
+  if (self.state === 'rejected') {
     promise2 = new PromiseX((resolve, reject) => {
       setTimeout(() => {
         try {
@@ -113,9 +120,9 @@ PromiseX.prototype.then = function(onfulfill, onreject) {
     });
     return promise2;
   }
-  if (self.state === "pending") {
+  if (self.state === 'pending') {
     promise2 = new PromiseX((resolve, reject) => {
-      self.onFulfilledQue.push(function(data) {
+      self.onFulfilledQue.push(function (data) {
         setTimeout(() => {
           try {
             let x = onfulfill(data);
@@ -126,7 +133,7 @@ PromiseX.prototype.then = function(onfulfill, onreject) {
         }, 0);
       });
 
-      self.onRejectedQue.push(function(data) {
+      self.onRejectedQue.push(function (data) {
         setTimeout(() => {
           try {
             let x = onreject(data);
@@ -141,7 +148,7 @@ PromiseX.prototype.then = function(onfulfill, onreject) {
   }
 };
 
-PromiseX.prototype.catch = function(fn) {
+PromiseX.prototype.catch = function (fn) {
   console.log('in catch');
   return this.then(null, fn);
 };
@@ -152,55 +159,66 @@ PromiseX.resolve = function (value) {
   });
 };
 
-PromiseX.reject = function(reason) {
-  return new PromiseX(function(resolve, reject) {
+PromiseX.reject = function (reason) {
+  return new PromiseX(function (resolve, reject) {
     reject(reason);
   });
 };
 
 PromiseX.all = function () {
-  const ary = []
-  let count = 0
-  
+  const ary = [];
+  let count = 0;
+
   return new Promise((resolve, reject) => {
-    function processData (key, value) {
-      count++
-      ary[key] = value
+    function processData(key, value) {
+      count++;
+      ary[key] = value;
       // => 如果promise中是异步resolve的话，使用promises.length === ary.length判断会有问题
       if (count === promises.length) {
-        resolve(ary)
+        resolve(ary);
       }
     }
 
     promises.forEach((item, index) => {
       if (isPromise(item)) {
         item
-          .then(res => {
-            processData(index, res)
+          .then((res) => {
+            processData(index, res);
           })
-          .catch(err => {
-            reject('reject promise' + index + err)
-          })
+          .catch((err) => {
+            reject('reject promise' + index + err);
+          });
       } else {
-        processData(index, item)
+        processData(index, item);
       }
-    })
-  })
-}
+    });
+  });
+};
 
-PromiseX.race = function(promises) {
+PromiseX.race = function (promises) {
   let execute = [];
   return new PromiseX((resolve, reject) => {
     if (!(promises instanceof Array)) {
       return reject(new Error('parameter must be a Function Type'));
     }
-    promises.forEach(promise => {
-      PromiseX.resolve(promise).then(value => {
-        execute.length === 0 ? resolve(value) : void (0);
+    promises.forEach((promise) => {
+      PromiseX.resolve(promise).then((value) => {
+        execute.length === 0 ? resolve(value) : void 0;
         execute.push(promise);
       });
     });
   });
+};
+
+PromiseX.finally = function (fn) {
+  return this.then(
+    () => {
+      return PromiseX.resolve(fn()).then((n) => data);
+    },
+    () => {
+      return PromiseX.resolve(fn()).then(n => { throw new Error(n) })
+    }
+  );
 };
 
 module.exports = PromiseX;
