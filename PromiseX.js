@@ -148,6 +148,19 @@ PromiseX.prototype.catch = function (fn) {
   return this.then(null, fn)
 }
 
+PromiseX.prototype.finally = function (fn) {
+  return this.then(
+    () => {
+      return PromiseX.resolve(fn()).then((n) => data)
+    },
+    () => {
+      return PromiseX.resolve(fn()).then((n) => {
+        throw new Error(n)
+      })
+    }
+  )
+}
+
 PromiseX.resolve = function (value) {
   return new PromiseX(function (resolve, reject) {
     resolve(value)
@@ -203,19 +216,6 @@ PromiseX.race = function (promises) {
       })
     })
   })
-}
-
-PromiseX.finally = function (fn) {
-  return this.then(
-    () => {
-      return PromiseX.resolve(fn()).then((n) => data)
-    },
-    () => {
-      return PromiseX.resolve(fn()).then((n) => {
-        throw new Error(n)
-      })
-    }
-  )
 }
 
 module.exports = PromiseX
