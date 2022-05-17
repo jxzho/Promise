@@ -162,42 +162,43 @@ PromiseX.prototype.finally = function (fn) {
 }
 
 PromiseX.resolve = function (value) {
-  return new PromiseX(function (resolve, reject) {
+  return new PromiseX(function (resolve) {
     resolve(value)
   })
 }
 
 PromiseX.reject = function (reason) {
-  return new PromiseX(function (resolve, reject) {
+  return new PromiseX(function (_, reject) {
     reject(reason)
   })
 }
 
-PromiseX.all = function () {
+PromiseX.all = function (promises) {
   const ary = []
   let count = 0
 
-  return new Promise((resolve, reject) => {
-    function processData(key, value) {
-      count++
-      ary[key] = value
-      // => 如果promise中是异步resolve的话，使用promises.length === ary.length判断会有问题
-      if (count === promises.length) {
-        resolve(ary)
-      }
+  function processData(key, value, resolve) {
+    count++
+    ary[key] = value
+    // 如果 promise 中是异步 `resolve` 的话
+    // 使用 `promises.length === ary.length` 判断会有问题
+    if (count === promises.length) {
+      resolve(ary)
     }
+  }
 
+  return new Promise((resolve, reject) => {
     promises.forEach((item, index) => {
       if (isPromise(item)) {
         item
           .then((res) => {
-            processData(index, res)
+            processData(index, res, resolve)
           })
           .catch((err) => {
             reject('reject promise' + index + err)
           })
       } else {
-        processData(index, item)
+        processData(index, item, resolve)
       }
     })
   })
