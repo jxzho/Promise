@@ -1,16 +1,6 @@
-const isObject = (val) => val !== null && typeof val === 'object'
+import { isPromise } from './utils'
 
-const isFn = (val) => typeof val === 'function'
-
-const isPromise = (value) => {
-  if (isObject(value) || isFn(value)) {
-    return isFn(value.then)
-  } else {
-    return false
-  }
-}
-
-function PromiseX(fn) {
+export function PromiseX (fn: Function) {
   let self = this
   self.state = 'pending'
   self.data = undefined
@@ -218,5 +208,3 @@ PromiseX.race = function (promises) {
     })
   })
 }
-
-module.exports = PromiseX

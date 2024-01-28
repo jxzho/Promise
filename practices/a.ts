@@ -1,30 +1,30 @@
-let PromiseX = require("./PromiseX");
+import { PromiseX } from '../promisex'
 
 setTimeout(() => {
-  console.log("setTimeout");
-}, 0);
+  console.log('setTimeout')
+}, 0)
 
-new PromiseX(resolve => {
-  console.log(1);
-  resolve();
+new PromiseX((resolve) => {
+  console.log(1)
+  resolve()
 })
   .then(() => {
-    console.log(2);
+    console.log(2)
   })
   .then(() => {
-    console.log(3);
-  });
+    console.log(3)
+  })
 
-new PromiseX(resolve => {
-  console.log(4);
-  resolve();
+new PromiseX((resolve) => {
+  console.log(4)
+  resolve()
 })
   .then(() => {
-    console.log(5);
+    console.log(5)
   })
   .then(() => {
-    console.log(6);
-  });
+    console.log(6)
+  })
 
 /* new Promise1(resolve => {
   console.log("promise 1");
@@ -51,4 +51,4 @@ new Promise1(resolve => {
     return console.log("B3");
   }); */
 
-console.log("end");
+console.log('end')

@@ -1,0 +1,20 @@
+{
+  "name": "promisex",
+  "version": "0.0.1",
+  "description": "Based on Promise/A+ standrad.",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "rimraf dist && nodemon --watch --include='**/*.ts' --exec \"esno run.ts\""
+  },
+  "keywords": [
+    "Promise/A+",
+    "Promise"
+  ],
+  "author": "Russell Xio",
+  "license": "MIT",
+  "devDependencies": {
+    "esno": "^4.0.0",
+    "nodemon": "^3.0.3",
+    "rimraf": "^5.0.5"
+  }
+}
